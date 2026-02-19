@@ -143,17 +143,32 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            position: relative;
         }
 
         #map {
             flex: 1;
             min-height: 0;
+            min-width: 0;
+        }
+
+        /* Resizer */
+        .resizer {
+            background-color: var(--border-main);
+            width: 4px;
+            cursor: col-resize;
+            z-index: 1000;
+            transition: background-color 0.2s;
+        }
+
+        .resizer:hover,
+        .resizer.dragging {
+            background-color: var(--text-accent);
         }
 
         .sidebar {
-            width: 340px;
+            width: 380px;
             background: var(--bg-sidebar);
-            border-left: 1px solid var(--border-main);
             overflow-y: auto;
             flex-shrink: 0;
             padding: 16px;
@@ -283,23 +298,42 @@
         }
 
         /* Compact Mode Overrides */
-        .sidebar.compact-mode .legend-detail {
-            display: none;
+        .sidebar.compact-mode .legend-item {
+            padding: 4px 6px;
+            gap: 6px;
+            margin-bottom: 2px;
+            align-items: center;
         }
 
-        .sidebar.compact-mode .legend-item {
-            padding: 8px 10px;
-            gap: 8px;
+        .sidebar.compact-mode .legend-dot {
+            width: 8px;
+            height: 8px;
+            margin-top: 0;
+        }
+
+        .sidebar.compact-mode .legend-name {
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .sidebar.compact-mode .legend-detail,
+        .sidebar.compact-mode .legend-address,
+        .sidebar.compact-mode .legend-price,
+        .sidebar.compact-mode .link-row {
+            display: none !important;
         }
 
         .sidebar.compact-mode .legend-badge {
-            margin-top: 2px;
-            font-size: 0.6rem;
-            padding: 2px 4px;
-        }
-
-        .sidebar.compact-mode .link-row {
-            margin-top: 4px;
+            margin-top: 0;
+            margin-left: 6px;
+            font-size: 0.55rem;
+            padding: 1px 4px;
+            vertical-align: middle;
+            display: inline-block;
         }
 
         .light-mode .badge-star {
@@ -600,6 +634,106 @@
             opacity: 0.7;
         }
 
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-main);
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--text-accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--text-accent);
+            border-radius: 2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Itinerary Timeline */
+        .itinerary-day {
+            margin-bottom: 24px;
+        }
+
+        .itinerary-date {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed var(--border-main);
+        }
+
+        .itinerary-slot {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--filter-border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .itinerary-slot.reserved {
+            background: rgba(142, 197, 252, 0.05);
+            border-color: rgba(142, 197, 252, 0.3);
+        }
+
+        .slot-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .slot-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-name);
+        }
+
+        .slot-detail {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
         /* Filter buttons */
         .filter-bar {
             display: flex;
@@ -648,12 +782,17 @@
                 flex: none;
             }
 
+            .resizer {
+                width: 100%;
+                height: 6px;
+                cursor: row-resize;
+            }
+
             .sidebar {
                 width: 100%;
                 height: 50vh;
                 flex: none;
-                border-left: none;
-                border-top: 1px solid var(--border-main);
+                border-top: none;
             }
         }
     </style>
@@ -661,8 +800,9 @@
 
 <body>
 
-    <div class="main-container">
+    <div class="main-container" id="main-container">
         <div id="map"></div>
+        <div class="resizer" id="drag-resizer"></div>
         <div class="sidebar" id="sidebar">
             <div class="top-controls">
                 <div class="title-group">
@@ -674,45 +814,98 @@
                 </button>
             </div>
 
-            <div class="action-bars">
-                <div class="filter-bar">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="restaurant-star">⭐ Michelin</button>
-                    <button class="filter-btn" data-filter="restaurant-other">🍽️ Recommended</button>
-                    <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury</button>
-                    <button class="filter-btn" data-filter="hotel-hilton">💳 Hilton/Aspire</button>
-                    <button class="filter-btn" data-filter="hotel-mid">🏡 Mid-Range</button>
-                </div>
-                <label class="compact-toggle">
-                    <input type="checkbox" id="compactToggle"> Compact View
-                </label>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="explore">Explore</button>
+                <button class="tab-btn" data-tab="itinerary">Itinerary</button>
             </div>
-            <div id="sidebar-list">
-                <div class="loading-msg">Loading locations…</div>
-            </div>
-            <div class="xhs-section">
-                <div class="xhs-toggle"
-                    onclick="document.getElementById('xhs-list').style.display = document.getElementById('xhs-list').style.display === 'none' ? 'block' : 'none'; this.querySelector('.xhs-arrow').textContent = document.getElementById('xhs-list').style.display === 'none' ? '▸' : '▾';">
-                    <h2>📕 小红书 References</h2>
-                    <span class="xhs-arrow" style="color: var(--text-heading); font-size: 0.85rem;">▾</span>
+
+            <!-- EXPLORE TAB -->
+            <div id="explore" class="tab-content active">
+                <div class="action-bars">
+                    <div class="filter-bar">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="restaurant-star">⭐ Michelin</button>
+                        <button class="filter-btn" data-filter="restaurant-other">🍽️ Recommended</button>
+                        <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury</button>
+                        <button class="filter-btn" data-filter="hotel-hilton">💳 Hilton/Aspire</button>
+                        <button class="filter-btn" data-filter="hotel-mid">🏡 Mid-Range</button>
+                    </div>
+                    <label class="compact-toggle">
+                        <input type="checkbox" id="compactToggle"> Compact View
+                    </label>
                 </div>
-                <div id="xhs-list" class="xhs-list">
-                    <a class="xhs-item" href="http://xhslink.com/o/2hTR2YdlkOC" target="_blank" rel="noopener">
-                        <span class="xhs-emoji">🦞</span> 最好吃没有之一 Santa Barbara Wharf
-                        <span class="xhs-desc">Shellfish Co — 开一号公路返程必吃</span>
-                    </a>
-                    <a class="xhs-item" href="http://xhslink.com/o/8EmNy9Ws7Qa" target="_blank" rel="noopener">
-                        <span class="xhs-emoji">🍽️</span> 50家圣巴巴拉三刷的宝藏餐厅大合集❗️
-                        <span class="xhs-desc">吐血整理 — 50 restaurant mega-guide</span>
-                    </a>
-                    <a class="xhs-item" href="http://xhslink.com/o/7Mhoz84L1cW" target="_blank" rel="noopener">
-                        <span class="xhs-emoji">🇪🇸</span> 第一次吃西班牙tapas就遭遇超強神店
-                        <span class="xhs-desc">Loquita tapas review</span>
-                    </a>
-                    <a class="xhs-item" href="http://xhslink.com/o/8QPtO96Ryi4" target="_blank" rel="noopener">
-                        <span class="xhs-emoji">😋</span> 在Santa Barbara的两周都吃了什么②
-                        <span class="xhs-desc">Two weeks of SB dining guide</span>
-                    </a>
+                <div id="sidebar-list">
+                    <div class="loading-msg">Loading locations…</div>
+                </div>
+                <div class="xhs-section">
+                    <div class="xhs-toggle"
+                        onclick="document.getElementById('xhs-list').style.display = document.getElementById('xhs-list').style.display === 'none' ? 'block' : 'none'; this.querySelector('.xhs-arrow').textContent = document.getElementById('xhs-list').style.display === 'none' ? '▸' : '▾';">
+                        <h2>📕 小红书 References</h2>
+                        <span class="xhs-arrow" style="color: var(--text-heading); font-size: 0.85rem;">▾</span>
+                    </div>
+                    <div id="xhs-list" class="xhs-list">
+                        <a class="xhs-item" href="http://xhslink.com/o/2hTR2YdlkOC" target="_blank" rel="noopener">
+                            <span class="xhs-emoji">🦞</span> 最好吃没有之一 Santa Barbara Wharf
+                            <span class="xhs-desc">Shellfish Co — 开一号公路返程必吃</span>
+                        </a>
+                        <a class="xhs-item" href="http://xhslink.com/o/8EmNy9Ws7Qa" target="_blank" rel="noopener">
+                            <span class="xhs-emoji">🍽️</span> 50家圣巴巴拉三刷的宝藏餐厅大合集❗️
+                            <span class="xhs-desc">吐血整理 — 50 restaurant mega-guide</span>
+                        </a>
+                        <a class="xhs-item" href="http://xhslink.com/o/7Mhoz84L1cW" target="_blank" rel="noopener">
+                            <span class="xhs-emoji">🇪🇸</span> 第一次吃西班牙tapas就遭遇超強神店
+                            <span class="xhs-desc">Loquita tapas review</span>
+                        </a>
+                        <a class="xhs-item" href="http://xhslink.com/o/8QPtO96Ryi4" target="_blank" rel="noopener">
+                            <span class="xhs-emoji">😋</span> 在Santa Barbara的两周都吃了什么②
+                            <span class="xhs-desc">Two weeks of SB dining guide</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITINERARY TAB -->
+            <div id="itinerary" class="tab-content">
+                <div class="itinerary-day">
+                    <div class="itinerary-date">Thursday, Feb 27</div>
+                    <div class="itinerary-slot">
+                        <span class="slot-time">Afternoon</span>
+                        <span class="slot-title">Check-in at Hotel</span>
+                        <span class="slot-detail">Choose hotel from Explore tab.</span>
+                    </div>
+                    <div class="itinerary-slot">
+                        <span class="slot-time">Dinner</span>
+                        <span class="slot-title">Open slot</span>
+                        <span class="slot-detail">Consider Loquita or The Lark.</span>
+                    </div>
+                </div>
+
+                <div class="itinerary-day">
+                    <div class="itinerary-date">Friday, Feb 28</div>
+                    <div class="itinerary-slot">
+                        <span class="slot-time">Lunch</span>
+                        <span class="slot-title">Open slot</span>
+                        <span class="slot-detail">Consider Corazón Cocina.</span>
+                    </div>
+                    <div class="itinerary-slot reserved">
+                        <span class="slot-time">Dinner • 5:00 PM (2 Guests)</span>
+                        <span class="slot-title">✅ Caruso's (Michelin ⭐)</span>
+                        <span class="slot-detail">Dress code: Collared shirts for men, no
+                            shorts/flip-flops.<br>Cancellation: Cancel 24hr+ ahead or $100/person no-show fee.</span>
+                    </div>
+                </div>
+
+                <div class="itinerary-day">
+                    <div class="itinerary-date">Saturday, Mar 1</div>
+                    <div class="itinerary-slot">
+                        <span class="slot-time">Morning</span>
+                        <span class="slot-title">Check-out & Beach Walk</span>
+                    </div>
+                    <div class="itinerary-slot">
+                        <span class="slot-time">Lunch</span>
+                        <span class="slot-title">Santa Barbara Shellfish Co.</span>
+                        <span class="slot-detail">End trip on Stearns Wharf.</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -979,6 +1172,94 @@
                 document.getElementById('sidebar-list').innerHTML =
                     `<div class="loading-msg">⚠️ Failed to load locations: ${err.message}</div>`;
                 console.error('Failed to load locations.json:', err);
+                // ——— Tabs Logic ———
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                tabBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const target = btn.dataset.tab;
+
+                        // Update active tab button
+                        tabBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        // Update active content
+                        tabContents.forEach(c => c.classList.remove('active'));
+                        document.getElementById(target).classList.add('active');
+                    });
+                });
+
+                // ——— Resizable Sidebar Logic ———
+                const resizer = document.getElementById('drag-resizer');
+                const sidebar = document.getElementById('sidebar');
+                const mapContainer = document.getElementById('map');
+                let isResizing = false;
+
+                // Load saved sizes
+                const savedWidth = localStorage.getItem('sidebarWidth');
+                const savedHeight = localStorage.getItem('sidebarHeight');
+                const isMobile = window.innerWidth <= 768;
+
+                if (savedWidth && !isMobile) {
+                    sidebar.style.width = savedWidth;
+                }
+                if (savedHeight && isMobile) {
+                    sidebar.style.height = savedHeight;
+                    mapContainer.style.height = `calc(100vh - ${savedHeight})`;
+                }
+
+                resizer.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    resizer.classList.add('dragging');
+                    document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
+                    e.preventDefault(); // Prevent text selection
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+
+                    const mobile = window.innerWidth <= 768;
+
+                    if (mobile) {
+                        // Vertical resize
+                        const newHeight = window.innerHeight - e.clientY;
+                        // Min height 100px, max height 80%
+                        if (newHeight >= 100 && newHeight <= window.innerHeight * 0.8) {
+                            const h = `${newHeight}px`;
+                            sidebar.style.height = h;
+                            mapContainer.style.height = `calc(100vh - ${h})`;
+                            localStorage.setItem('sidebarHeight', h);
+                        }
+                    } else {
+                        // Horizontal resize (sidebar is on right, but flex reverses this, map is flex: 1)
+                        // The sidebar is width strictly on right.
+                        const newWidth = window.innerWidth - e.clientX;
+                        // Min width 280px, max width 60%
+                        if (newWidth >= 280 && newWidth <= window.innerWidth * 0.6) {
+                            const w = `${newWidth}px`;
+                            sidebar.style.width = w;
+                            localStorage.setItem('sidebarWidth', w);
+                        }
+                    }
+
+                    // Tell leaflet to update map dims
+                    if (map) map.invalidateSize();
+                });
+
+                document.addEventListener('mouseup', () => {
+                    if (isResizing) {
+                        isResizing = false;
+                        resizer.classList.remove('dragging');
+                        document.body.style.cursor = 'default';
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    // If switching between mobile/desktop modes, reset styles temporarily so flex takes over cleanly
+                    if (map) map.invalidateSize();
+                });
+
             });
     </script>
 </body>
