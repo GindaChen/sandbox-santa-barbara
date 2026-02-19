@@ -1172,95 +1172,95 @@
                 document.getElementById('sidebar-list').innerHTML =
                     `<div class="loading-msg">⚠️ Failed to load locations: ${err.message}</div>`;
                 console.error('Failed to load locations.json:', err);
-                // ——— Tabs Logic ———
-                const tabBtns = document.querySelectorAll('.tab-btn');
-                const tabContents = document.querySelectorAll('.tab-content');
-
-                tabBtns.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const target = btn.dataset.tab;
-
-                        // Update active tab button
-                        tabBtns.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-
-                        // Update active content
-                        tabContents.forEach(c => c.classList.remove('active'));
-                        document.getElementById(target).classList.add('active');
-                    });
-                });
-
-                // ——— Resizable Sidebar Logic ———
-                const resizer = document.getElementById('drag-resizer');
-                const sidebar = document.getElementById('sidebar');
-                const mapContainer = document.getElementById('map');
-                let isResizing = false;
-
-                // Load saved sizes
-                const savedWidth = localStorage.getItem('sidebarWidth');
-                const savedHeight = localStorage.getItem('sidebarHeight');
-                const isMobile = window.innerWidth <= 768;
-
-                if (savedWidth && !isMobile) {
-                    sidebar.style.width = savedWidth;
-                }
-                if (savedHeight && isMobile) {
-                    sidebar.style.height = savedHeight;
-                    mapContainer.style.height = `calc(100vh - ${savedHeight})`;
-                }
-
-                resizer.addEventListener('mousedown', (e) => {
-                    isResizing = true;
-                    resizer.classList.add('dragging');
-                    document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
-                    e.preventDefault(); // Prevent text selection
-                });
-
-                document.addEventListener('mousemove', (e) => {
-                    if (!isResizing) return;
-
-                    const mobile = window.innerWidth <= 768;
-
-                    if (mobile) {
-                        // Vertical resize
-                        const newHeight = window.innerHeight - e.clientY;
-                        // Min height 100px, max height 80%
-                        if (newHeight >= 100 && newHeight <= window.innerHeight * 0.8) {
-                            const h = `${newHeight}px`;
-                            sidebar.style.height = h;
-                            mapContainer.style.height = `calc(100vh - ${h})`;
-                            localStorage.setItem('sidebarHeight', h);
-                        }
-                    } else {
-                        // Horizontal resize (sidebar is on right, but flex reverses this, map is flex: 1)
-                        // The sidebar is width strictly on right.
-                        const newWidth = window.innerWidth - e.clientX;
-                        // Min width 280px, max width 60%
-                        if (newWidth >= 280 && newWidth <= window.innerWidth * 0.6) {
-                            const w = `${newWidth}px`;
-                            sidebar.style.width = w;
-                            localStorage.setItem('sidebarWidth', w);
-                        }
-                    }
-
-                    // Tell leaflet to update map dims
-                    if (map) map.invalidateSize();
-                });
-
-                document.addEventListener('mouseup', () => {
-                    if (isResizing) {
-                        isResizing = false;
-                        resizer.classList.remove('dragging');
-                        document.body.style.cursor = 'default';
-                    }
-                });
-
-                window.addEventListener('resize', () => {
-                    // If switching between mobile/desktop modes, reset styles temporarily so flex takes over cleanly
-                    if (map) map.invalidateSize();
-                });
-
             });
+
+        // ——— Tabs Logic ———
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.tab;
+
+                // Update active tab button
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update active content
+                tabContents.forEach(c => c.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+        // ——— Resizable Sidebar Logic ———
+        const resizer = document.getElementById('drag-resizer');
+        const sidebar = document.getElementById('sidebar');
+        const mapContainer = document.getElementById('map');
+        let isResizing = false;
+
+        // Load saved sizes
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        const savedHeight = localStorage.getItem('sidebarHeight');
+        const isMobile = window.innerWidth <= 768;
+
+        if (savedWidth && !isMobile) {
+            sidebar.style.width = savedWidth;
+        }
+        if (savedHeight && isMobile) {
+            sidebar.style.height = savedHeight;
+            mapContainer.style.height = `calc(100vh - ${savedHeight})`;
+        }
+
+        resizer.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            resizer.classList.add('dragging');
+            document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
+            e.preventDefault(); // Prevent text selection
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+
+            const mobile = window.innerWidth <= 768;
+
+            if (mobile) {
+                // Vertical resize
+                const newHeight = window.innerHeight - e.clientY;
+                // Min height 100px, max height 80%
+                if (newHeight >= 100 && newHeight <= window.innerHeight * 0.8) {
+                    const h = `${newHeight}px`;
+                    sidebar.style.height = h;
+                    mapContainer.style.height = `calc(100vh - ${h})`;
+                    localStorage.setItem('sidebarHeight', h);
+                }
+            } else {
+                // Horizontal resize (sidebar is on right, but flex reverses this, map is flex: 1)
+                // The sidebar is width strictly on right.
+                const newWidth = window.innerWidth - e.clientX;
+                // Min width 280px, max width 60%
+                if (newWidth >= 280 && newWidth <= window.innerWidth * 0.6) {
+                    const w = `${newWidth}px`;
+                    sidebar.style.width = w;
+                    localStorage.setItem('sidebarWidth', w);
+                }
+            }
+
+            // Tell leaflet to update map dims
+            if (map) map.invalidateSize();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizer.classList.remove('dragging');
+                document.body.style.cursor = 'default';
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            // If switching between mobile/desktop modes, reset styles temporarily so flex takes over cleanly
+            if (map) map.invalidateSize();
+        });
     </script>
 </body>
 
