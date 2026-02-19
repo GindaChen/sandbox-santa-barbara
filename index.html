@@ -873,7 +873,7 @@
                         <span class="slot-title">Check-in at Hotel</span>
                         <span class="slot-detail">Choose hotel from Explore tab.</span>
                     </div>
-                    <div class="itinerary-slot">
+                    <div class="itinerary-slot" data-loc="Loquita">
                         <span class="slot-time">Dinner</span>
                         <span class="slot-title">Open slot</span>
                         <span class="slot-detail">Consider Loquita or The Lark.</span>
@@ -882,12 +882,12 @@
 
                 <div class="itinerary-day">
                     <div class="itinerary-date">Friday, Feb 28</div>
-                    <div class="itinerary-slot">
+                    <div class="itinerary-slot" data-loc="Corazón Cocina">
                         <span class="slot-time">Lunch</span>
                         <span class="slot-title">Open slot</span>
                         <span class="slot-detail">Consider Corazón Cocina.</span>
                     </div>
-                    <div class="itinerary-slot reserved">
+                    <div class="itinerary-slot reserved" data-loc="Caruso's">
                         <span class="slot-time">Dinner • 5:00 PM (2 Guests)</span>
                         <span class="slot-title">✅ Caruso's (Michelin ⭐)</span>
                         <span class="slot-detail">Dress code: Collared shirts for men, no
@@ -901,7 +901,7 @@
                         <span class="slot-time">Morning</span>
                         <span class="slot-title">Check-out & Beach Walk</span>
                     </div>
-                    <div class="itinerary-slot">
+                    <div class="itinerary-slot" data-loc="SB Shellfish Co.">
                         <span class="slot-time">Lunch</span>
                         <span class="slot-title">Santa Barbara Shellfish Co.</span>
                         <span class="slot-detail">End trip on Stearns Wharf.</span>
@@ -991,6 +991,34 @@
         // ——— Create Markers ———
         let locations = [];
         const markers = [];
+
+        function highlightMarker(activeMarker) {
+            markers.forEach(m => {
+                const el = m.getElement();
+                if (el) {
+                    if (m === activeMarker) {
+                        el.style.opacity = '1';
+                        el.style.zIndex = '1000';
+                        el.firstElementChild.style.transform = 'scale(1.4)';
+                    } else {
+                        el.style.opacity = '0.3';
+                        el.style.zIndex = '400';
+                        el.firstElementChild.style.transform = 'scale(1)';
+                    }
+                }
+            });
+        }
+
+        function resetMarkers() {
+            markers.forEach(m => {
+                const el = m.getElement();
+                if (el) {
+                    el.style.opacity = '1';
+                    el.style.zIndex = '400';
+                    el.firstElementChild.style.transform = 'scale(1)';
+                }
+            });
+        }
 
         function createCircleIcon(color) {
             const borderColor = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.25)';
@@ -1129,6 +1157,14 @@
                         document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
                         item.classList.add('active');
                     });
+                    item.addEventListener('mouseenter', () => {
+                        markers[index].openPopup();
+                        highlightMarker(markers[index]);
+                    });
+                    item.addEventListener('mouseleave', () => {
+                        markers[index].closePopup();
+                        resetMarkers();
+                    });
                     list.appendChild(item);
                 });
             });
@@ -1160,6 +1196,37 @@
             });
         });
 
+        // Setup Itinerary Hover Events
+        function setupItineraryInteractions() {
+            document.querySelectorAll('.itinerary-slot[data-loc]').forEach(slot => {
+                const locName = slot.dataset.loc;
+                slot.style.cursor = 'pointer';
+
+                slot.addEventListener('mouseenter', () => {
+                    const m = markers.find(mark => mark._locData.name === locName);
+                    if (m && map.hasLayer(m)) {
+                        m.openPopup();
+                        highlightMarker(m);
+                    }
+                });
+
+                slot.addEventListener('mouseleave', () => {
+                    const m = markers.find(mark => mark._locData.name === locName);
+                    if (m && map.hasLayer(m)) {
+                        m.closePopup();
+                        resetMarkers();
+                    }
+                });
+
+                slot.addEventListener('click', () => {
+                    const m = markers.find(mark => mark._locData.name === locName);
+                    if (m && map.hasLayer(m)) {
+                        map.flyTo([m._locData.lat, m._locData.lng], 16, { duration: 0.8 });
+                    }
+                });
+            });
+        }
+
         // ——— Load Data ———
         fetch('locations.json')
             .then(res => res.json())
@@ -1167,6 +1234,7 @@
                 locations = data;
                 initMarkers();
                 buildSidebar('all');
+                setupItineraryInteractions();
             })
             .catch(err => {
                 document.getElementById('sidebar-list').innerHTML =
@@ -1189,6 +1257,25 @@
                 // Update active content
                 tabContents.forEach(c => c.classList.remove('active'));
                 document.getElementById(target).classList.add('active');
+
+                // Map filtering based on tab
+                if (target === 'itinerary') {
+                    const itLocs = Array.from(document.querySelectorAll('.itinerary-slot[data-loc]')).map(s => s.dataset.loc);
+                    markers.forEach(m => {
+                        if (itLocs.includes(m._locData.name)) {
+                            m.addTo(map);
+                        } else {
+                            map.removeLayer(m);
+                        }
+                    });
+                    const visible = markers.filter(m => map.hasLayer(m));
+                    if (visible.length > 0) {
+                        map.fitBounds(L.featureGroup(visible).getBounds().pad(0.15), { duration: 0.6 });
+                    }
+                } else {
+                    const activeFilterBtn = document.querySelector('.filter-btn.active');
+                    if (activeFilterBtn) activeFilterBtn.click();
+                }
             });
         });
 
