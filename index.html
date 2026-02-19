@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santa Barbara Trip Map — Hotels & Restaurants</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-header: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --bg-sidebar: #13132b;
+            --bg-hover: rgba(255, 255, 255, 0.05);
+            --bg-active: rgba(142, 197, 252, 0.1);
+            --border-main: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(142, 197, 252, 0.2);
+            --text-primary: #e0e0e0;
+            --text-secondary: #888;
+            --text-accent: #8ec5fc;
+            --text-heading: #777;
+            --text-name: #eee;
+            --popup-bg: #1e1e3a;
+            --popup-border: rgba(255, 255, 255, 0.08);
+            --popup-desc: #aaa;
+            --filter-border: rgba(255, 255, 255, 0.12);
+            --filter-hover-border: rgba(255, 255, 255, 0.25);
+            --filter-text: #aaa;
+            --filter-hover-text: #ddd;
+            --gradient-title: linear-gradient(90deg, #e0c3fc, #8ec5fc);
+            --toggle-bg: rgba(255, 255, 255, 0.08);
+            --toggle-hover: rgba(255, 255, 255, 0.15);
+        }
+
+        .light-mode {
+            --bg-primary: #f0f2f5;
+            --bg-header: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-sidebar: #ffffff;
+            --bg-hover: rgba(0, 0, 0, 0.04);
+            --bg-active: rgba(102, 126, 234, 0.1);
+            --border-main: rgba(0, 0, 0, 0.08);
+            --border-active: rgba(102, 126, 234, 0.3);
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --text-accent: #553c9a;
+            --text-heading: #a0aec0;
+            --text-name: #1a202c;
+            --popup-bg: #ffffff;
+            --popup-border: rgba(0, 0, 0, 0.1);
+            --popup-desc: #718096;
+            --filter-border: rgba(0, 0, 0, 0.12);
+            --filter-hover-border: rgba(0, 0, 0, 0.25);
+            --filter-text: #718096;
+            --filter-hover-text: #2d3748;
+            --gradient-title: linear-gradient(90deg, #fff, #e0e7ff);
+            --toggle-bg: rgba(255, 255, 255, 0.2);
+            --toggle-hover: rgba(255, 255, 255, 0.35);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            background: var(--bg-header);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-main);
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: var(--gradient-title);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .dates {
+            font-size: 0.85rem;
+            color: var(--text-accent);
+            font-weight: 500;
+            opacity: 0.85;
+        }
+
+        .light-mode .dates {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: none;
+            background: var(--toggle-bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--toggle-hover);
+        }
+
+        .theme-toggle .icon {
+            font-size: 1rem;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #map {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-main);
+            overflow-y: auto;
+            flex-shrink: 0;
+            padding: 16px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .sidebar h2 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-heading);
+            margin-bottom: 10px;
+            margin-top: 16px;
+        }
+
+        .sidebar h2:first-child {
+            margin-top: 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+            margin-bottom: 4px;
+            border: 1px solid transparent;
+        }
+
+        .legend-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(2px);
+        }
+
+        .legend-item.active {
+            background: var(--bg-active);
+            border-color: var(--border-active);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 3px;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .legend-info {
+            flex: 1;
+        }
+
+        .legend-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-name);
+            line-height: 1.3;
+        }
+
+        .legend-detail {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .legend-address {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .legend-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        .badge-star {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+        .badge-luxury {
+            background: rgba(224, 195, 252, 0.15);
+            color: #ce93d8;
+        }
+
+        .badge-midrange {
+            background: rgba(129, 199, 132, 0.15);
+            color: #66bb6a;
+        }
+
+        .badge-petfree {
+            background: rgba(77, 208, 225, 0.15);
+            color: #4dd0e1;
+        }
+
+        .badge-bib {
+            background: rgba(255, 112, 67, 0.15);
+            color: #ff7043;
+        }
+
+        .legend-price {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #4dd0e1;
+            margin-top: 3px;
+        }
+
+        .popup-price {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #4dd0e1;
+            margin-top: 6px;
+        }
+
+        .light-mode .legend-price,
+        .light-mode .popup-price {
+            color: #00838f;
+        }
+
+        .light-mode .badge-star {
+            background: rgba(255, 152, 0, 0.12);
+            color: #e65100;
+        }
+
+        .light-mode .badge-luxury {
+            background: rgba(156, 39, 176, 0.1);
+            color: #7b1fa2;
+        }
+
+        .light-mode .badge-midrange {
+            background: rgba(76, 175, 80, 0.1);
+            color: #2e7d32;
+        }
+
+        .light-mode .badge-petfree {
+            background: rgba(0, 151, 167, 0.1);
+            color: #00838f;
+        }
+
+        .badge-bib {
+            background: rgba(255, 112, 67, 0.15);
+            color: #ff7043;
+        }
+
+        .badge-recommended {
+            background: rgba(255, 204, 128, 0.15);
+            color: #ffcc80;
+        }
+
+        .badge-local {
+            background: rgba(79, 195, 247, 0.15);
+            color: #4fc3f7;
+        }
+
+        .light-mode .badge-bib {
+            background: rgba(255, 87, 34, 0.1);
+            color: #d84315;
+        }
+
+        .light-mode .badge-recommended {
+            background: rgba(245, 124, 0, 0.1);
+            color: #e65100;
+        }
+
+        .light-mode .badge-local {
+            background: rgba(2, 136, 209, 0.1);
+            color: #0277bd;
+        }
+
+        /* Xiaohongshu sidebar */
+        .xhs-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-main);
+        }
+
+        .xhs-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .xhs-toggle h2 {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .xhs-list {
+            padding: 0;
+        }
+
+        .xhs-item {
+            display: block;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            line-height: 1.4;
+            transition: background 0.2s;
+        }
+
+        .xhs-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .xhs-item .xhs-emoji {
+            margin-right: 6px;
+        }
+
+        .xhs-item .xhs-desc {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .link-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .link-btn:hover {
+            opacity: 0.8;
+        }
+
+        .link-btn-primary {
+            background: rgba(142, 197, 252, 0.2);
+            color: #8ec5fc;
+        }
+
+        .link-btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+        }
+
+        .light-mode .link-btn-primary {
+            background: rgba(102, 126, 234, 0.12);
+            color: #4338ca;
+        }
+
+        .light-mode .link-btn-secondary {
+            background: rgba(0, 0, 0, 0.06);
+            color: #4a5568;
+        }
+
+        /* Leaflet popup styling */
+        .leaflet-popup-content-wrapper {
+            background: var(--popup-bg) !important;
+            color: var(--text-primary) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid var(--popup-border) !important;
+        }
+
+        .leaflet-popup-tip {
+            background: var(--popup-bg) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 12px 16px !important;
+            font-family: 'Inter', sans-serif !important;
+            line-height: 1.5 !important;
+        }
+
+        .popup-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: var(--text-name);
+        }
+
+        .popup-type {
+            font-size: 0.72rem;
+            color: var(--text-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .popup-desc {
+            font-size: 0.82rem;
+            color: var(--popup-desc);
+            line-height: 1.45;
+        }
+
+        .popup-address {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        /* Filter buttons */
+        .filter-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--filter-border);
+            background: transparent;
+            color: var(--filter-text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--bg-active);
+            border-color: var(--border-active);
+            color: var(--text-accent);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--filter-hover-border);
+            color: var(--filter-hover-text);
+        }
+
+        .loading-msg {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column-reverse;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-left: none;
+                border-top: 1px solid var(--border-main);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🗺️ Santa Barbara Trip Planner</h1>
+        <div class="header-right">
+            <span class="dates">Feb 27 – Mar 1, 2026</span>
+            <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">
+                <span class="icon" id="themeIcon">☀️</span>
+                <span id="themeLabel">Light</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div id="map"></div>
+        <div class="sidebar">
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="restaurant-star">⭐ Michelin Star</button>
+                <button class="filter-btn" data-filter="restaurant-other">🍽️ Recommended</button>
+                <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury Hotels</button>
+                <button class="filter-btn" data-filter="hotel-mid">🏡 Mid-Range</button>
+            </div>
+            <div id="sidebar-list">
+                <div class="loading-msg">Loading locations…</div>
+            </div>
+            <div class="xhs-section">
+                <div class="xhs-toggle"
+                    onclick="document.getElementById('xhs-list').style.display = document.getElementById('xhs-list').style.display === 'none' ? 'block' : 'none'; this.querySelector('.xhs-arrow').textContent = document.getElementById('xhs-list').style.display === 'none' ? '▸' : '▾';">
+                    <h2>📕 小红书 References</h2>
+                    <span class="xhs-arrow" style="color: var(--text-heading); font-size: 0.85rem;">▾</span>
+                </div>
+                <div id="xhs-list" class="xhs-list">
+                    <a class="xhs-item" href="http://xhslink.com/o/2hTR2YdlkOC" target="_blank" rel="noopener">
+                        <span class="xhs-emoji">🦞</span> 最好吃没有之一 Santa Barbara Wharf
+                        <span class="xhs-desc">Shellfish Co — 开一号公路返程必吃</span>
+                    </a>
+                    <a class="xhs-item" href="http://xhslink.com/o/8EmNy9Ws7Qa" target="_blank" rel="noopener">
+                        <span class="xhs-emoji">🍽️</span> 50家圣巴巴拉三刷的宝藏餐厅大合集❗️
+                        <span class="xhs-desc">吐血整理 — 50 restaurant mega-guide</span>
+                    </a>
+                    <a class="xhs-item" href="http://xhslink.com/o/7Mhoz84L1cW" target="_blank" rel="noopener">
+                        <span class="xhs-emoji">🇪🇸</span> 第一次吃西班牙tapas就遭遇超強神店
+                        <span class="xhs-desc">Loquita tapas review</span>
+                    </a>
+                    <a class="xhs-item" href="http://xhslink.com/o/8QPtO96Ryi4" target="_blank" rel="noopener">
+                        <span class="xhs-emoji">😋</span> 在Santa Barbara的两周都吃了什么②
+                        <span class="xhs-desc">Two weeks of SB dining guide</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // ——— Tile Layers ———
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        });
+
+        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        });
+
+        // ——— Initialize Map ———
+        const savedTheme = localStorage.getItem('sb-map-theme') || 'dark';
+        const initialTiles = savedTheme === 'light' ? lightTiles : darkTiles;
+
+        const map = L.map('map', {
+            zoomControl: true,
+            attributionControl: true,
+            layers: [initialTiles]
+        }).setView([34.4208, -119.6982], 13);
+
+        // ——— Theme Toggle ———
+        let isDark = savedTheme !== 'light';
+
+        function applyTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+
+            if (isDark) {
+                body.classList.remove('light-mode');
+                icon.textContent = '☀️';
+                label.textContent = 'Light';
+                map.removeLayer(lightTiles);
+                darkTiles.addTo(map);
+                localStorage.setItem('sb-map-theme', 'dark');
+            } else {
+                body.classList.add('light-mode');
+                icon.textContent = '🌙';
+                label.textContent = 'Dark';
+                map.removeLayer(darkTiles);
+                lightTiles.addTo(map);
+                localStorage.setItem('sb-map-theme', 'light');
+            }
+
+            // Re-render popups to pick up CSS variable changes
+            markers.forEach(m => {
+                if (m.isPopupOpen()) {
+                    m.openPopup();
+                }
+            });
+        }
+
+        if (!isDark) {
+            document.body.classList.add('light-mode');
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme();
+        });
+
+        // ——— Create Markers ———
+        let locations = [];
+        const markers = [];
+
+        function createCircleIcon(color) {
+            const borderColor = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.25)';
+            return L.divIcon({
+                className: '',
+                html: `<div style="
+      width: 18px; height: 18px;
+      background: ${color};
+      border-radius: 50%;
+      border: 2.5px solid ${borderColor};
+      box-shadow: 0 0 10px ${color}88, 0 2px 8px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    "></div>`,
+                iconSize: [18, 18],
+                iconAnchor: [9, 9],
+                popupAnchor: [0, -12]
+            });
+        }
+
+        function mapsUrl(loc) {
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.name + ' ' + loc.address)}`;
+        }
+
+        function createPopupContent(loc) {
+            const bookLabel = loc.type.startsWith('restaurant') ? 'Reserve' : 'Book';
+            return `
+    <div class="popup-type">${loc.category}</div>
+    <div class="popup-title">${loc.name}</div>
+    <div class="popup-desc">${loc.desc}</div>
+    <div class="popup-price">💰 ${loc.price}</div>
+    <div class="popup-address">📍 ${loc.address}</div>
+    <div class="link-row">
+      <a href="${loc.url}" target="_blank" rel="noopener" class="link-btn link-btn-primary">🔗 ${bookLabel}</a>
+      <a href="${mapsUrl(loc)}" target="_blank" rel="noopener" class="link-btn link-btn-secondary">🗺️ Directions</a>
+    </div>
+  `;
+        }
+
+        function initMarkers() {
+            locations.forEach((loc, i) => {
+                const icon = createCircleIcon(loc.color);
+                const marker = L.marker([loc.lat, loc.lng], { icon })
+                    .addTo(map)
+                    .bindPopup(createPopupContent(loc), { maxWidth: 280 });
+
+                marker._locData = loc;
+                marker._locIndex = i;
+                markers.push(marker);
+            });
+
+            // Fit all markers on load
+            if (markers.length > 0) {
+                const allGroup = L.featureGroup(markers);
+                map.fitBounds(allGroup.getBounds().pad(0.12));
+            }
+        }
+
+        // ——— Build Sidebar ———
+        function buildSidebar(filter) {
+            const list = document.getElementById('sidebar-list');
+            list.innerHTML = '';
+
+            const groups = {
+                'restaurant-star': { label: '⭐ Michelin-Starred Restaurants', items: [] },
+                'restaurant-other': { label: '🍽️ Recommended & Bib Gourmand', items: [] },
+                'hotel-lux': { label: '🏨 Luxury Hotels', items: [] },
+                'hotel-mid': { label: '🏡 Mid-Range & Budget Hotels', items: [] }
+            };
+
+            locations.forEach((loc, i) => {
+                if (filter === 'all' || loc.type === filter) {
+                    if (groups[loc.type]) {
+                        groups[loc.type].items.push({ loc, index: i });
+                    }
+                }
+            });
+
+            Object.values(groups).forEach(group => {
+                if (group.items.length === 0) return;
+
+                const h2 = document.createElement('h2');
+                h2.textContent = group.label;
+                list.appendChild(h2);
+
+                group.items.forEach(({ loc, index }) => {
+                    const item = document.createElement('div');
+                    item.className = 'legend-item';
+                    item.innerHTML = `
+        <div class="legend-dot" style="background: ${loc.color}"></div>
+        <div class="legend-info">
+          <div class="legend-name">${loc.name}</div>
+          <div class="legend-detail">${loc.desc}</div>
+          <div class="legend-price">💰 ${loc.price}</div>
+          <div class="legend-address">📍 ${loc.address}</div>
+          <span class="legend-badge badge-${loc.badge}">${loc.category}</span>
+          <div class="link-row">
+            <a href="${loc.url}" target="_blank" rel="noopener" class="link-btn link-btn-primary" onclick="event.stopPropagation();">🔗 ${loc.type.startsWith('restaurant') ? 'Reserve' : 'Book'}</a>
+            <a href="${mapsUrl(loc)}" target="_blank" rel="noopener" class="link-btn link-btn-secondary" onclick="event.stopPropagation();">🗺️ Map</a>
+          </div>
+        </div>
+      `;
+                    item.addEventListener('click', () => {
+                        map.flyTo([loc.lat, loc.lng], 16, { duration: 0.8 });
+                        markers[index].openPopup();
+                        document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
+                        item.classList.add('active');
+                    });
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        // ——— Filters ———
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+
+                markers.forEach(m => {
+                    if (filter === 'all' || m._locData.type === filter) {
+                        m.addTo(map);
+                    } else {
+                        map.removeLayer(m);
+                    }
+                });
+
+                buildSidebar(filter);
+
+                // Fit bounds to visible markers
+                const visible = markers.filter(m => map.hasLayer(m));
+                if (visible.length > 0) {
+                    const group = L.featureGroup(visible);
+                    map.fitBounds(group.getBounds().pad(0.15), { duration: 0.6 });
+                }
+            });
+        });
+
+        // ——— Load Data ———
+        fetch('locations.json')
+            .then(res => res.json())
+            .then(data => {
+                locations = data;
+                initMarkers();
+                buildSidebar('all');
+            })
+            .catch(err => {
+                document.getElementById('sidebar-list').innerHTML =
+                    `<div class="loading-msg">⚠️ Failed to load locations: ${err.message}</div>`;
+                console.error('Failed to load locations.json:', err);
+            });
+    </script>
+</body>
+
+</html>
