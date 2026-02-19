@@ -328,6 +328,16 @@
             color: #0277bd;
         }
 
+        .badge-hilton {
+            background: rgba(0, 53, 128, 0.15);
+            color: #8bb4ff;
+        }
+
+        .light-mode .badge-hilton {
+            background: rgba(0, 53, 128, 0.1);
+            color: #003580;
+        }
+
         /* Xiaohongshu sidebar */
         .xhs-section {
             margin-top: 20px;
@@ -420,6 +430,103 @@
         .light-mode .link-btn-secondary {
             background: rgba(0, 0, 0, 0.06);
             color: #4a5568;
+        }
+
+        .link-btn-accent {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+
+        .light-mode .link-btn-accent {
+            background: rgba(245, 158, 11, 0.1);
+            color: #b45309;
+        }
+
+        /* Menu Panel */
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--border-main);
+            z-index: 2000;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-panel.active {
+            right: 0;
+        }
+
+        .menu-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .menu-content {
+            padding: 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .menu-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .menu-item {
+            margin-bottom: 20px;
+        }
+
+        .menu-item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-heading);
+            margin-bottom: 4px;
+        }
+
+        .menu-item-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .menu-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-main);
+        }
+
+        @media (max-width: 600px) {
+            .menu-panel {
+                width: 100%;
+                right: -100%;
+            }
         }
 
         /* Leaflet popup styling */
@@ -543,7 +650,8 @@
                 <button class="filter-btn active" data-filter="all">All</button>
                 <button class="filter-btn" data-filter="restaurant-star">⭐ Michelin Star</button>
                 <button class="filter-btn" data-filter="restaurant-other">🍽️ Recommended</button>
-                <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury Hotels</button>
+                <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury</button>
+                <button class="filter-btn" data-filter="hotel-hilton">💳 Hilton/Aspire</button>
                 <button class="filter-btn" data-filter="hotel-mid">🏡 Mid-Range</button>
             </div>
             <div id="sidebar-list">
@@ -574,6 +682,20 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="menu-panel" class="menu-panel">
+        <div class="menu-header">
+            <h2 id="menu-title">Restaurant Menu</h2>
+            <button class="close-menu" onclick="closeMenu()">✕</button>
+        </div>
+        <div class="menu-content" id="menu-body">
+            <!-- Menu items injected here -->
+        </div>
+        <div class="menu-footer">
+            <a id="full-menu-link" href="#" target="_blank" rel="noopener" class="link-btn link-btn-primary"
+                style="width: 100%; justify-content: center; padding: 10px;">🌐 View Full Menu Website</a>
         </div>
     </div>
 
@@ -670,7 +792,8 @@
         }
 
         function createPopupContent(loc) {
-            const bookLabel = loc.type.startsWith('restaurant') ? 'Reserve' : 'Book';
+            const bookLabel = (loc.type && loc.type.startsWith('restaurant')) ? 'Reserve' : 'Book';
+            const menuBtn = loc.menu ? `<button class="link-btn link-btn-accent" onclick="openMenu('${loc.name}')">📋 View Menu</button>` : '';
             return `
     <div class="popup-type">${loc.category}</div>
     <div class="popup-title">${loc.name}</div>
@@ -679,6 +802,7 @@
     <div class="popup-address">📍 ${loc.address}</div>
     <div class="link-row">
       <a href="${loc.url}" target="_blank" rel="noopener" class="link-btn link-btn-primary">🔗 ${bookLabel}</a>
+      ${menuBtn}
       <a href="${mapsUrl(loc)}" target="_blank" rel="noopener" class="link-btn link-btn-secondary">🗺️ Directions</a>
     </div>
   `;
@@ -703,6 +827,33 @@
             }
         }
 
+        // ——— Menu Logic ———
+        function openMenu(name) {
+            const loc = locations.find(l => l.name === name);
+            if (!loc || !loc.menu) return;
+
+            document.getElementById('menu-title').textContent = loc.name;
+            const body = document.getElementById('menu-body');
+            body.innerHTML = '<span class="menu-section-title">Signature Dishes & Highlights</span>';
+
+            loc.menu.items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'menu-item';
+                div.innerHTML = `
+                    <div class="menu-item-name">${item.name}</div>
+                    <div class="menu-item-desc">${item.desc}</div>
+                `;
+                body.appendChild(div);
+            });
+
+            document.getElementById('full-menu-link').href = loc.menu.url;
+            document.getElementById('menu-panel').classList.add('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('menu-panel').classList.remove('active');
+        }
+
         // ——— Build Sidebar ———
         function buildSidebar(filter) {
             const list = document.getElementById('sidebar-list');
@@ -711,6 +862,7 @@
             const groups = {
                 'restaurant-star': { label: '⭐ Michelin-Starred Restaurants', items: [] },
                 'restaurant-other': { label: '🍽️ Recommended & Bib Gourmand', items: [] },
+                'hotel-hilton': { label: '🔹 Hilton Honors (Aspire/FN)', items: [] },
                 'hotel-lux': { label: '🏨 Luxury Hotels', items: [] },
                 'hotel-mid': { label: '🏡 Mid-Range & Budget Hotels', items: [] }
             };
@@ -742,7 +894,8 @@
           <div class="legend-address">📍 ${loc.address}</div>
           <span class="legend-badge badge-${loc.badge}">${loc.category}</span>
           <div class="link-row">
-            <a href="${loc.url}" target="_blank" rel="noopener" class="link-btn link-btn-primary" onclick="event.stopPropagation();">🔗 ${loc.type.startsWith('restaurant') ? 'Reserve' : 'Book'}</a>
+            <a href="${loc.url}" target="_blank" rel="noopener" class="link-btn link-btn-primary" onclick="event.stopPropagation();">🔗 ${(loc.type && loc.type.startsWith('restaurant')) ? 'Reserve' : 'Book'}</a>
+            ${loc.menu ? `<button class="link-btn link-btn-accent" onclick="event.stopPropagation(); openMenu('${loc.name}')">📋 Menu</button>` : ''}
             <a href="${mapsUrl(loc)}" target="_blank" rel="noopener" class="link-btn link-btn-secondary" onclick="event.stopPropagation();">🗺️ Map</a>
           </div>
         </div>

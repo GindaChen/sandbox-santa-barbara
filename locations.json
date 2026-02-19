@@ -3,11 +3,36 @@
     "name": "Caruso's",
     "type": "restaurant-star",
     "category": "Michelin ⭐ + 🌿 Green Star",
-    "desc": "Italian coastal cuisine at Rosewood Miramar Beach. Reservations required.",
+    "desc": "Coastal Italian. Dress code: Refined elegance (collared shirts required for men; no shorts/flip-flops).",
     "address": "1759 S Jameson Ln, Montecito, CA 93108",
     "price": "$195–295/person",
     "priceLevel": "$$$$",
     "url": "https://www.rosewoodhotels.com/en/miramar-beach-montecito/dining/carusos",
+    "menu": {
+      "url": "https://www.rosewoodhotels.com/en/miramar-beach-montecito/dining/carusos/winter-dinner-menu",
+      "items": [
+        {
+          "name": "Benvenuti",
+          "desc": "Welcome Bites from the Chef to start your journey."
+        },
+        {
+          "name": "Salsify Vellutata",
+          "desc": "Hokkaido Scallops, Garden Herb Salmoriglio."
+        },
+        {
+          "name": "Yolk Gnocchetti Sardi",
+          "desc": "Stephanie’s Uni, Santa Barbara Abalone, Yuzu, Caviar."
+        },
+        {
+          "name": "Wagyu Tenderloin",
+          "desc": "Lone Mountain Ranch Wagyu, Vegetable Terrine, Truffle."
+        },
+        {
+          "name": "Apple and Parsnip",
+          "desc": "Chamomile, Brown Butter Gelato."
+        }
+      ]
+    },
     "lat": 34.4206,
     "lng": -119.6286,
     "color": "#ffc107",
@@ -22,6 +47,31 @@
     "price": "$235/person",
     "priceLevel": "$$$$",
     "url": "https://www.exploretock.com/silvers-omakase",
+    "menu": {
+      "url": "https://www.silversomakase.com/",
+      "items": [
+        {
+          "name": "Uni Rice",
+          "desc": "Signature dish with caviar and masago arare."
+        },
+        {
+          "name": "Aged Tuna",
+          "desc": "Dry-aged bluefin tuna to enhance depth of flavor."
+        },
+        {
+          "name": "Kinmedai",
+          "desc": "Golden Eye Snapper, meticulously prepared."
+        },
+        {
+          "name": "Chu-Toro Tartare",
+          "desc": "Bluefin tuna tartare with refined aromatics."
+        },
+        {
+          "name": "Wagyu Beef",
+          "desc": "Grade A5 wagyu, lightly seared."
+        }
+      ]
+    },
     "lat": 34.4152,
     "lng": -119.6918,
     "color": "#ffc107",
@@ -36,6 +86,31 @@
     "price": "$185/person",
     "priceLevel": "$$$$",
     "url": "https://www.exploretock.com/sushibarmontecito",
+    "menu": {
+      "url": "https://www.sushibyscratchrestaurants.com/montecito",
+      "items": [
+        {
+          "name": "Tuna Tartare",
+          "desc": "Served with sturgeon caviar."
+        },
+        {
+          "name": "Bone Marrow Nigiri",
+          "desc": "Seared unagi with bone marrow drippings."
+        },
+        {
+          "name": "Santa Barbara Uni",
+          "desc": "Local sea urchin, exceptionally fresh."
+        },
+        {
+          "name": "A5 Wagyu Beef",
+          "desc": "Torched wagyu with smoked salt."
+        },
+        {
+          "name": "Roasted Marshmallow",
+          "desc": "A whimsical dessert finish to the 17 courses."
+        }
+      ]
+    },
     "lat": 34.4214,
     "lng": -119.6404,
     "color": "#ffc107",
@@ -50,6 +125,31 @@
     "price": "$155–180/person",
     "priceLevel": "$$$",
     "url": "https://www.yoichis.com",
+    "menu": {
+      "url": "https://yoichis.com/menu/",
+      "items": [
+        {
+          "name": "Zensai",
+          "desc": "Assorted appetizers including Wagyu and seasonal delicacies."
+        },
+        {
+          "name": "Owan",
+          "desc": "Clear soup with seasonal seafood and vegetables."
+        },
+        {
+          "name": "Mukouzuke",
+          "desc": "Chef's selection of the finest seasonal sashimi."
+        },
+        {
+          "name": "Yakimono",
+          "desc": "Grilled dish, often featuring miso-marinated fish."
+        },
+        {
+          "name": "Shokuji",
+          "desc": "Seasonal nigiri sushi selection."
+        }
+      ]
+    },
     "lat": 34.4243,
     "lng": -119.6965,
     "color": "#ffcc80",
@@ -64,6 +164,31 @@
     "price": "$30–60/person",
     "priceLevel": "$$",
     "url": "https://www.thelarksb.com",
+    "menu": {
+      "url": "https://www.thelarksb.com/menu",
+      "items": [
+        {
+          "name": "West Coast Oysters",
+          "desc": "Freshly shucked with seasonal mignonette."
+        },
+        {
+          "name": "Brown Butter Cornbread",
+          "desc": "With rosemary honey and sea salt."
+        },
+        {
+          "name": "Channel Islands Crudo",
+          "desc": "Line-caught local fish with citrus and herbs."
+        },
+        {
+          "name": "Sage Smoked Pork Chop",
+          "desc": "With seasonal accompaniments."
+        },
+        {
+          "name": "Dark Chocolate Pot de Creme",
+          "desc": "Rich chocolate with sea salt and cream."
+        }
+      ]
+    },
     "lat": 34.4148,
     "lng": -119.6877,
     "color": "#ffcc80",
@@ -78,6 +203,31 @@
     "price": "$25–45/person",
     "priceLevel": "$$",
     "url": "https://www.bettinapizzeria.com",
+    "menu": {
+      "url": "https://www.bettinapizzeria.com/menu",
+      "items": [
+        {
+          "name": "Margherita Pizza",
+          "desc": "Mozzarella, crushed tomato, basil."
+        },
+        {
+          "name": "Pepperoni Pizza",
+          "desc": "With chili oil and wildflower honey."
+        },
+        {
+          "name": "Root's Spinach Pizza",
+          "desc": "Sausage, ricotta, braised leeks, meyer lemon."
+        },
+        {
+          "name": "Maitake Trumpet Pizza",
+          "desc": "Maitake mushrooms, crushed tomato, basil, red onion."
+        },
+        {
+          "name": "Meatlovers Pizza",
+          "desc": "Pepperoni, sausage, pickled onion, basil."
+        }
+      ]
+    },
     "lat": 34.4220,
     "lng": -119.6420,
     "color": "#ff7043",
@@ -92,6 +242,31 @@
     "price": "$40–70/person",
     "priceLevel": "$$",
     "url": "https://www.loquitasb.com",
+    "menu": {
+      "url": "https://www.loquitasb.com/menu",
+      "items": [
+        {
+          "name": "Chorizo y Pollo Paella",
+          "desc": "Chorizo, chicken, gigante beans, mushrooms."
+        },
+        {
+          "name": "Mariscos Paella",
+          "desc": "Scallops, mussels, prawns, black garlic sofrito."
+        },
+        {
+          "name": "Patatas Bravas",
+          "desc": "Yukon gold potatoes with brava sauce and aioli."
+        },
+        {
+          "name": "Pulpo a la Gallega",
+          "desc": "Grilled Spanish octopus with confit potatoes."
+        },
+        {
+          "name": "Carpaccio de Carne",
+          "desc": "Grass-fed beef, truffle manchego, parsley aioli."
+        }
+      ]
+    },
     "lat": 34.4143,
     "lng": -119.6916,
     "color": "#ff7043",
@@ -106,6 +281,31 @@
     "price": "$20–40/person",
     "priceLevel": "$",
     "url": "https://www.corazoncocinasb.com",
+    "menu": {
+      "url": "https://www.corazoncocinasb.com/menu",
+      "items": [
+        {
+          "name": "Birria Taco",
+          "desc": "Braised short rib, peanut salsa macha, onions."
+        },
+        {
+          "name": "Cauliflower Taco",
+          "desc": "Tempura cauliflower, avocado, dates, salsa cruda."
+        },
+        {
+          "name": "Ensenada Taco",
+          "desc": "Beer battered lingcod, cabbage, lime-mayo crema."
+        },
+        {
+          "name": "Norteno Taco",
+          "desc": "Popular grilled steak taco with signature toppings."
+        },
+        {
+          "name": "Mole con Pollo",
+          "desc": "Chicken, black almond mole, queso fresco."
+        }
+      ]
+    },
     "lat": 34.4227,
     "lng": -119.7008,
     "color": "#ff7043",
@@ -120,10 +320,91 @@
     "price": "$30–60/person",
     "priceLevel": "$$",
     "url": "https://www.samasamakitchen.com",
+    "menu": {
+      "url": "https://www.samasamakitchen.com/menu",
+      "items": [
+        {
+          "name": "Smashed Cucumber Salad",
+          "desc": "With chili, garlic, and vinegar dressing."
+        },
+        {
+          "name": "Crispy Brussels Sprouts",
+          "desc": "Fish sauce caramel, dates, lime, pickled onion."
+        },
+        {
+          "name": "Signature Wings",
+          "desc": "Twice-fried wings with spicy glaze."
+        },
+        {
+          "name": "Nasi Goreng Jawa",
+          "desc": "Javanese fried rice with sweet soy and egg."
+        },
+        {
+          "name": "Braised Pork Mie Goreng",
+          "desc": "Egg noodles with soy-ginger braised pork."
+        }
+      ]
+    },
     "lat": 34.4260,
     "lng": -119.7060,
     "color": "#ff7043",
     "badge": "bib"
+  },
+  {
+    "name": "Hilton SB Beachfront",
+    "type": "hotel-hilton",
+    "category": "Hilton Honors · Pet-friendly",
+    "desc": "Oceanfront resort. Grassy relief areas + treats. Pet fee: $75 per stay.",
+    "address": "633 E Cabrillo Blvd, Santa Barbara, CA 93103",
+    "price": "from $309/night",
+    "priceLevel": "$$$",
+    "url": "https://www.hilton.com/en/hotels/sbafvhi-hilton-santa-barbara-beachfront-resort/",
+    "lat": 34.4173,
+    "lng": -119.6841,
+    "color": "#003580",
+    "badge": "hilton"
+  },
+  {
+    "name": "The Leta SB Goleta",
+    "type": "hotel-hilton",
+    "category": "Hilton Honors · No Pet Fee!",
+    "desc": "Tapestry Collection. Stylish & pet-friendly (up to 2 dogs, 150lb). $0 pet fee.",
+    "address": "5650 Calle Real, Goleta, CA 93117",
+    "price": "from $189/night",
+    "priceLevel": "$$",
+    "url": "https://www.hilton.com/en/hotels/sbaxcup-the-leta-santa-barbara-goleta/",
+    "lat": 34.4447,
+    "lng": -119.8648,
+    "color": "#003580",
+    "badge": "hilton"
+  },
+  {
+    "name": "Hilton Garden Inn Goleta",
+    "type": "hotel-hilton",
+    "category": "Hilton Honors · Pet-friendly",
+    "desc": "Reliable stay. 2 pets (cat/dog) up to 75lb. Pet fee: $75 (1-4 nights).",
+    "address": "6878 Hollister Ave, Goleta, CA 93117",
+    "price": "from $160/night",
+    "priceLevel": "$$",
+    "url": "https://www.hilton.com/en/hotels/sbaxogi-hilton-garden-inn-santa-barbara-goleta/",
+    "lat": 34.4287,
+    "lng": -119.8694,
+    "color": "#003580",
+    "badge": "hilton"
+  },
+  {
+    "name": "Hampton Inn Goleta",
+    "type": "hotel-hilton",
+    "category": "Hilton Honors · Pet-friendly",
+    "desc": "Clean & reliable. 2 pets up to 75lb. Pet fee: $75 (1-4 nights).",
+    "address": "5665 Hollister Ave, Goleta, CA 93117",
+    "price": "from $155/night",
+    "priceLevel": "$$",
+    "url": "https://www.hilton.com/en/hotels/sbahxhx-hampton-inn-santa-barbara-goleta/",
+    "lat": 34.4300,
+    "lng": -119.8215,
+    "color": "#003580",
+    "badge": "hilton"
   },
   {
     "name": "Kimpton Canary Hotel",
@@ -274,6 +555,31 @@
     "price": "$25–60/person",
     "priceLevel": "$$",
     "url": "https://www.shellfishco.com",
+    "menu": {
+      "url": "https://www.shellfishco.com/menu",
+      "items": [
+        {
+          "name": "Whole Maine Lobster",
+          "desc": "Steamed and served with butter, coleslaw, and onion rings."
+        },
+        {
+          "name": "Lobster Roll",
+          "desc": "Maine lobster and tiger prawns on toasted brioche."
+        },
+        {
+          "name": "Spiny Lobster",
+          "desc": "Local seasonal specialty, priced per lb."
+        },
+        {
+          "name": "Lobster Pasta",
+          "desc": "Sautéed in butter, garlic, and white wine over linguini."
+        },
+        {
+          "name": "Clam Chowder",
+          "desc": "Award-winning traditional New England style."
+        }
+      ]
+    },
     "lat": 34.4087,
     "lng": -119.6850,
     "color": "#4fc3f7",
