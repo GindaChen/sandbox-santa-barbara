@@ -298,53 +298,23 @@
         }
 
         /* Compact Mode Overrides */
+        .sidebar.compact-mode .legend-detail {
+            display: none;
+        }
+
         .sidebar.compact-mode .legend-item {
-            padding: 3px 6px;
-            gap: 6px;
-            margin-bottom: 1px;
-            align-items: center;
-            flex-direction: row;
+            padding: 8px 10px;
+            gap: 8px;
         }
 
-        .sidebar.compact-mode .legend-dot {
-            width: 6px;
-            height: 6px;
-            margin-top: 0;
-            flex-shrink: 0;
-        }
-
-        .sidebar.compact-mode .legend-info {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 6px;
-            overflow: hidden;
-        }
-
-        .sidebar.compact-mode .legend-name {
-            font-size: 0.72rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar.compact-mode .legend-detail,
-        .sidebar.compact-mode .legend-address,
-        .sidebar.compact-mode .link-row,
         .sidebar.compact-mode .legend-badge {
-            display: none !important;
+            margin-top: 2px;
+            font-size: 0.6rem;
+            padding: 2px 4px;
         }
 
-        .sidebar.compact-mode .legend-price {
-            font-size: 0.65rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-            opacity: 0.7;
-        }
-
-        .sidebar.compact-mode h2 {
-            font-size: 0.7rem;
-            margin: 6px 0 2px;
+        .sidebar.compact-mode .link-row {
+            margin-top: 4px;
         }
 
         .light-mode .badge-star {
@@ -745,30 +715,84 @@
             margin-top: 4px;
         }
 
-        /* Filter Dropdown */
-        .filter-select {
-            width: 100%;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
+        /* Filter Checkboxes */
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .filter-chip {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
             font-weight: 600;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--filter-border);
+            background: transparent;
+            color: var(--filter-text);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .filter-chip input[type="checkbox"] {
+            display: none;
+        }
+
+        .filter-chip.checked {
+            background: var(--bg-active);
+            border-color: var(--border-active);
+            color: var(--text-accent);
+        }
+
+        .filter-chip:hover {
+            border-color: var(--filter-hover-border);
+        }
+
+        /* Star Rating */
+        .star-rating {
+            display: inline-flex;
+            gap: 1px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0 1px;
+            opacity: 0.3;
+            transition: opacity 0.15s;
+        }
+
+        .star-btn.filled {
+            opacity: 1;
+        }
+
+        .sort-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        .sort-bar select {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            padding: 4px 8px;
+            border-radius: 6px;
             border: 1px solid var(--filter-border);
             background: var(--bg-sidebar);
             color: var(--text-primary);
             cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            transition: border-color 0.2s;
-        }
-
-        .filter-select:hover,
-        .filter-select:focus {
-            border-color: var(--border-active);
-            outline: none;
         }
 
         .loading-msg {
@@ -829,18 +853,31 @@
             <div id="explore" class="tab-content active">
                 <div class="action-bars"
                     style="position: sticky; top: 0; z-index: 10; background: var(--bg-sidebar); padding-bottom: 8px;">
-                    <select class="filter-select" id="filterSelect">
-                        <option value="all">📍 All Locations</option>
-                        <option value="restaurant-star">⭐ Michelin Starred</option>
-                        <option value="restaurant-other">🍽️ Recommended & Bib</option>
-                        <option value="hotel-lux">🏨 Luxury Hotels</option>
-                        <option value="hotel-hilton">💳 Hilton / Aspire</option>
-                        <option value="hotel-mid">🏡 Mid-Range Hotels</option>
-                        <option value="daytrip">🇩🇰 Solvang Day Trip</option>
-                    </select>
-                    <label class="compact-toggle">
-                        <input type="checkbox" id="compactToggle"> Compact View
-                    </label>
+                    <div class="filter-group" id="filterGroup">
+                        <label class="filter-chip checked"><input type="checkbox" value="restaurant-star" checked> ⭐
+                            Michelin</label>
+                        <label class="filter-chip checked"><input type="checkbox" value="restaurant-other" checked> 🍽️
+                            Recommended</label>
+                        <label class="filter-chip checked"><input type="checkbox" value="hotel-lux" checked> 🏨
+                            Luxury</label>
+                        <label class="filter-chip checked"><input type="checkbox" value="hotel-hilton" checked> 💳
+                            Hilton</label>
+                        <label class="filter-chip checked"><input type="checkbox" value="hotel-mid" checked> 🏡
+                            Mid-Range</label>
+                        <label class="filter-chip checked"><input type="checkbox" value="daytrip" checked> 🇩🇰
+                            Solvang</label>
+                    </div>
+                    <div class="sort-bar">
+                        <span>Sort:</span>
+                        <select id="sortSelect">
+                            <option value="default">Default</option>
+                            <option value="star-desc">⭐ Rating High→Low</option>
+                            <option value="star-asc">⭐ Rating Low→High</option>
+                        </select>
+                        <label class="compact-toggle" style="margin-left: auto;">
+                            <input type="checkbox" id="compactToggle"> Compact
+                        </label>
+                    </div>
                 </div>
                 <div id="sidebar-list">
                     <div class="loading-msg">Loading locations…</div>
@@ -1131,28 +1168,55 @@
                 'daytrip': { label: '🇩🇰 Solvang Day Trip', items: [] }
             };
 
+            const activeTypes = Array.isArray(filter) ? filter : (filter === 'all' ? Object.keys(groups) : [filter]);
+
             locations.forEach((loc, i) => {
-                if (filter === 'all' || loc.type === filter) {
+                if (activeTypes.includes(loc.type)) {
                     if (groups[loc.type]) {
                         groups[loc.type].items.push({ loc, index: i });
                     }
                 }
             });
 
-            Object.values(groups).forEach(group => {
-                if (group.items.length === 0) return;
+            // Apply sort
+            const sortMode = document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'default';
+            const ratings = JSON.parse(localStorage.getItem('sb-ratings') || '{}');
 
-                const h2 = document.createElement('h2');
-                h2.textContent = group.label;
-                list.appendChild(h2);
+            if (sortMode === 'star-desc' || sortMode === 'star-asc') {
+                // Flatten, sort, render flat
+                let allItems = [];
+                Object.values(groups).forEach(g => allItems.push(...g.items));
+                allItems.sort((a, b) => {
+                    const ra = ratings[a.loc.name] || 0;
+                    const rb = ratings[b.loc.name] || 0;
+                    return sortMode === 'star-desc' ? rb - ra : ra - rb;
+                });
+                allItems.forEach(({ loc, index }) => renderItem(list, loc, index, ratings));
+            } else {
+                Object.values(groups).forEach(group => {
+                    if (group.items.length === 0) return;
+                    const h2 = document.createElement('h2');
+                    h2.textContent = group.label;
+                    list.appendChild(h2);
+                    group.items.forEach(({ loc, index }) => renderItem(list, loc, index, ratings));
+                });
+            }
+        }
 
-                group.items.forEach(({ loc, index }) => {
-                    const item = document.createElement('div');
-                    item.className = 'legend-item';
-                    item.innerHTML = `
+        function renderItem(list, loc, index, ratings) {
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+            const currentRating = ratings[loc.name] || 0;
+            let starsHtml = '<span class="star-rating">';
+            for (let s = 1; s <= 5; s++) {
+                starsHtml += `<button class="star-btn ${s <= currentRating ? 'filled' : ''}" data-star="${s}" data-name="${loc.name}">${s <= currentRating ? '⭐' : '☆'}</button>`;
+            }
+            starsHtml += '</span>';
+
+            item.innerHTML = `
         <div class="legend-dot" style="background: ${loc.color}"></div>
         <div class="legend-info">
-          <div class="legend-name">${loc.name}</div>
+          <div class="legend-name">${loc.name} ${starsHtml}</div>
           <div class="legend-detail">${loc.desc}</div>
           <div class="legend-price">💰 ${loc.price}</div>
           <div class="legend-address">📍 ${loc.address}</div>
@@ -1164,47 +1228,78 @@
           </div>
         </div>
       `;
-                    item.addEventListener('click', () => {
-                        map.flyTo([loc.lat, loc.lng], 16, { duration: 0.8 });
-                        markers[index].openPopup();
-                        document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
-                        item.classList.add('active');
-                    });
-                    item.addEventListener('mouseenter', () => {
-                        markers[index].openPopup();
-                        highlightMarker(markers[index]);
-                    });
-                    item.addEventListener('mouseleave', () => {
-                        markers[index].closePopup();
-                        resetMarkers();
-                    });
-                    list.appendChild(item);
+            // Star click handler
+            item.querySelectorAll('.star-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const name = btn.dataset.name;
+                    const star = parseInt(btn.dataset.star);
+                    const r = JSON.parse(localStorage.getItem('sb-ratings') || '{}');
+                    r[name] = r[name] === star ? 0 : star; // Toggle off if same star clicked
+                    localStorage.setItem('sb-ratings', JSON.stringify(r));
+                    applyMultiFilter(); // Rebuild to reflect
                 });
             });
+
+            item.addEventListener('click', () => {
+                map.flyTo([loc.lat, loc.lng], 16, { duration: 0.8 });
+                markers[index].openPopup();
+                document.querySelectorAll('.legend-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+            });
+            item.addEventListener('mouseenter', () => {
+                markers[index].openPopup();
+                highlightMarker(markers[index]);
+            });
+            item.addEventListener('mouseleave', () => {
+                markers[index].closePopup();
+                resetMarkers();
+            });
+            list.appendChild(item);
         }
 
-        // ——— Filters ———
-        function applyFilter(filter) {
+        // ——— Multi-Checkbox Filters ———
+        function getActiveFilters() {
+            return Array.from(document.querySelectorAll('#filterGroup input[type=checkbox]:checked')).map(cb => cb.value);
+        }
+
+        function applyMultiFilter() {
+            const active = getActiveFilters();
+
             markers.forEach(m => {
-                if (filter === 'all' || m._locData.type === filter) {
+                if (active.includes(m._locData.type)) {
                     m.addTo(map);
                 } else {
                     map.removeLayer(m);
                 }
             });
 
-            buildSidebar(filter);
+            buildSidebar(active);
 
-            // Fit bounds to visible markers
             const visible = markers.filter(m => map.hasLayer(m));
             if (visible.length > 0) {
-                const group = L.featureGroup(visible);
-                map.fitBounds(group.getBounds().pad(0.15), { duration: 0.6 });
+                map.fitBounds(L.featureGroup(visible).getBounds().pad(0.15), { duration: 0.6 });
             }
         }
 
-        document.getElementById('filterSelect').addEventListener('change', (e) => {
-            applyFilter(e.target.value);
+        // Wire up checkboxes
+        document.querySelectorAll('#filterGroup .filter-chip').forEach(chip => {
+            const cb = chip.querySelector('input');
+            chip.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return; // let checkbox handle itself
+                cb.checked = !cb.checked;
+                chip.classList.toggle('checked', cb.checked);
+                applyMultiFilter();
+            });
+            cb.addEventListener('change', () => {
+                chip.classList.toggle('checked', cb.checked);
+                applyMultiFilter();
+            });
+        });
+
+        // Sort handler
+        document.getElementById('sortSelect').addEventListener('change', () => {
+            applyMultiFilter();
         });
 
         // Setup Itinerary Hover Events
@@ -1244,7 +1339,7 @@
             .then(data => {
                 locations = data;
                 initMarkers();
-                buildSidebar('all');
+                buildSidebar(getActiveFilters());
                 setupItineraryInteractions();
             })
             .catch(err => {
@@ -1284,7 +1379,7 @@
                         map.fitBounds(L.featureGroup(visible).getBounds().pad(0.15), { duration: 0.6 });
                     }
                 } else {
-                    applyFilter(document.getElementById('filterSelect').value);
+                    applyMultiFilter();
                 }
             });
         });
