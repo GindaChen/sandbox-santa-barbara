@@ -631,6 +631,20 @@
     "badge": "midrange"
   },
   {
+    "name": "Casa Del Mar Inn",
+    "type": "hotel-mid",
+    "category": "Booked ✅ · Pet-friendly",
+    "desc": "Our hotel! 2 nights Feb 27–Mar 1. Cancel 48hr+ before arrival or charged 1 night+tax.",
+    "address": "18 Bath St, Santa Barbara, CA 93101",
+    "price": "✅ Booked (2 nights)",
+    "priceLevel": "$$",
+    "url": "https://www.casadelmar.com",
+    "lat": 34.4142,
+    "lng": -119.6910,
+    "color": "#4caf50",
+    "badge": "petfree"
+  },
+  {
     "name": "Santa Barbara Shellfish Co.",
     "type": "restaurant-other",
     "category": "Local Favorite 🦞",
