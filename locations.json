@@ -738,5 +738,33 @@
     "lng": -120.1380,
     "color": "#ab47bc",
     "badge": "daytrip"
+  },
+  {
+    "name": "Peasants Feast",
+    "type": "daytrip",
+    "category": "Lunch 🍽️",
+    "desc": "Michelin-recognized spot known for local produce, famous carnitas tacos, and gourmet sandwiches. Perfect for a sit-down lunch.",
+    "address": "487 Atterdag Rd, Solvang, CA 93463",
+    "price": "$20–40/person",
+    "priceLevel": "$$",
+    "url": "https://www.peasantsfeast.com/",
+    "lat": 34.5954,
+    "lng": -120.1407,
+    "color": "#ab47bc",
+    "badge": "bib"
+  },
+  {
+    "name": "Copenhagen Sausage Garden",
+    "type": "daytrip",
+    "category": "Casual Lunch 🌭",
+    "desc": "Outdoor beer garden serving handcrafted beers, vast sausage selection, and pub fare. Dog-friendly and lively patio.",
+    "address": "1660 Copenhagen Dr, Solvang, CA 93463",
+    "price": "$15–30/person",
+    "priceLevel": "$",
+    "url": "https://www.copenhagensausagegarden.com/",
+    "lat": 34.5948,
+    "lng": -120.1404,
+    "color": "#ab47bc",
+    "badge": "daytrip"
   }
 ]
