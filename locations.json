@@ -584,5 +584,61 @@
     "lng": -119.6850,
     "color": "#4fc3f7",
     "badge": "local"
+  },
+  {
+    "name": "The Copenhagen House",
+    "type": "daytrip",
+    "category": "🇩🇰 Solvang Day Trip",
+    "desc": "Danish gift shop with adorable Hoptimist bobblehead figurines and Scandinavian décor.",
+    "address": "1660 Copenhagen Dr, Solvang, CA 93463",
+    "price": "Shopping",
+    "priceLevel": "$",
+    "url": "https://www.google.com/maps/place/The+Copenhagen+House/@34.5955,-120.1376",
+    "lat": 34.5955,
+    "lng": -120.1376,
+    "color": "#ab47bc",
+    "badge": "daytrip"
+  },
+  {
+    "name": "Copenhagen Sausage Garden",
+    "type": "daytrip",
+    "category": "🇩🇰 Solvang Day Trip",
+    "desc": "Popular sausage spot next to Copenhagen House. Try the sampler — pick 3 sausages with tons of sauce choices.",
+    "address": "1660 Copenhagen Dr, Solvang, CA 93463",
+    "price": "$10–20/person",
+    "priceLevel": "$",
+    "url": "https://www.copenhagensausagegarden.com",
+    "lat": 34.5957,
+    "lng": -120.1378,
+    "color": "#ab47bc",
+    "badge": "daytrip"
+  },
+  {
+    "name": "Good Seed Coffee Boutique",
+    "type": "daytrip",
+    "category": "🇩🇰 Solvang Day Trip",
+    "desc": "Cute café with great service. Lavender Latte is a must-try. Beautiful ceramic cups for dine-in.",
+    "address": "1607 Mission Dr, Solvang, CA 93463",
+    "price": "$5–10",
+    "priceLevel": "$",
+    "url": "https://www.goodseedcoffeeboutique.com",
+    "lat": 34.5960,
+    "lng": -120.1395,
+    "color": "#ab47bc",
+    "badge": "daytrip"
+  },
+  {
+    "name": "Mole Hole Cottage",
+    "type": "daytrip",
+    "category": "🇩🇰 Solvang Day Trip",
+    "desc": "Jellycat heaven! Sky dragons, hand bouquets, and all the hot items. Gift & baby boutique.",
+    "address": "1539 Mission Dr, Solvang, CA 93463",
+    "price": "Shopping",
+    "priceLevel": "$",
+    "url": "https://www.google.com/maps/place/Mole+Hole+Cottage/@34.5963,-120.1380",
+    "lat": 34.5963,
+    "lng": -120.1380,
+    "color": "#ab47bc",
+    "badge": "daytrip"
   }
 ]

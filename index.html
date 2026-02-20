@@ -299,41 +299,52 @@
 
         /* Compact Mode Overrides */
         .sidebar.compact-mode .legend-item {
-            padding: 4px 6px;
+            padding: 3px 6px;
             gap: 6px;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
             align-items: center;
+            flex-direction: row;
         }
 
         .sidebar.compact-mode .legend-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             margin-top: 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar.compact-mode .legend-info {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
         }
 
         .sidebar.compact-mode .legend-name {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: inline-block;
-            vertical-align: middle;
         }
 
         .sidebar.compact-mode .legend-detail,
         .sidebar.compact-mode .legend-address,
-        .sidebar.compact-mode .legend-price,
-        .sidebar.compact-mode .link-row {
+        .sidebar.compact-mode .link-row,
+        .sidebar.compact-mode .legend-badge {
             display: none !important;
         }
 
-        .sidebar.compact-mode .legend-badge {
-            margin-top: 0;
-            margin-left: 6px;
-            font-size: 0.55rem;
-            padding: 1px 4px;
-            vertical-align: middle;
-            display: inline-block;
+        .sidebar.compact-mode .legend-price {
+            font-size: 0.65rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            opacity: 0.7;
+        }
+
+        .sidebar.compact-mode h2 {
+            font-size: 0.7rem;
+            margin: 6px 0 2px;
         }
 
         .light-mode .badge-star {
@@ -734,35 +745,30 @@
             margin-top: 4px;
         }
 
-        /* Filter buttons */
-        .filter-bar {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
+        /* Filter Dropdown */
+        .filter-select {
+            width: 100%;
             font-family: 'Inter', sans-serif;
-            font-size: 0.72rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 8px 12px;
+            border-radius: 8px;
             border: 1px solid var(--filter-border);
-            background: transparent;
-            color: var(--filter-text);
+            background: var(--bg-sidebar);
+            color: var(--text-primary);
             cursor: pointer;
-            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: border-color 0.2s;
         }
 
-        .filter-btn.active {
-            background: var(--bg-active);
+        .filter-select:hover,
+        .filter-select:focus {
             border-color: var(--border-active);
-            color: var(--text-accent);
-        }
-
-        .filter-btn:hover {
-            border-color: var(--filter-hover-border);
-            color: var(--filter-hover-text);
+            outline: none;
         }
 
         .loading-msg {
@@ -821,15 +827,17 @@
 
             <!-- EXPLORE TAB -->
             <div id="explore" class="tab-content active">
-                <div class="action-bars">
-                    <div class="filter-bar">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="restaurant-star">⭐ Michelin</button>
-                        <button class="filter-btn" data-filter="restaurant-other">🍽️ Recommended</button>
-                        <button class="filter-btn" data-filter="hotel-lux">🏨 Luxury</button>
-                        <button class="filter-btn" data-filter="hotel-hilton">💳 Hilton/Aspire</button>
-                        <button class="filter-btn" data-filter="hotel-mid">🏡 Mid-Range</button>
-                    </div>
+                <div class="action-bars"
+                    style="position: sticky; top: 0; z-index: 10; background: var(--bg-sidebar); padding-bottom: 8px;">
+                    <select class="filter-select" id="filterSelect">
+                        <option value="all">📍 All Locations</option>
+                        <option value="restaurant-star">⭐ Michelin Starred</option>
+                        <option value="restaurant-other">🍽️ Recommended & Bib</option>
+                        <option value="hotel-lux">🏨 Luxury Hotels</option>
+                        <option value="hotel-hilton">💳 Hilton / Aspire</option>
+                        <option value="hotel-mid">🏡 Mid-Range Hotels</option>
+                        <option value="daytrip">🇩🇰 Solvang Day Trip</option>
+                    </select>
                     <label class="compact-toggle">
                         <input type="checkbox" id="compactToggle"> Compact View
                     </label>
@@ -859,6 +867,10 @@
                         <a class="xhs-item" href="http://xhslink.com/o/8QPtO96Ryi4" target="_blank" rel="noopener">
                             <span class="xhs-emoji">😋</span> 在Santa Barbara的两周都吃了什么②
                             <span class="xhs-desc">Two weeks of SB dining guide</span>
+                        </a>
+                        <a class="xhs-item" href="http://xhslink.com/o/DcoacaJwzE" target="_blank" rel="noopener">
+                            <span class="xhs-emoji">🐕</span> 小狗勇闯Solvang丹麦小镇 攻略
+                            <span class="xhs-desc">Copenhagen House, Sausage Garden, Good Seed Coffee, Mole Hole</span>
                         </a>
                     </div>
                 </div>
@@ -1115,7 +1127,8 @@
                 'restaurant-other': { label: '🍽️ Recommended & Bib Gourmand', items: [] },
                 'hotel-hilton': { label: '🔹 Hilton Honors (Aspire/FN)', items: [] },
                 'hotel-lux': { label: '🏨 Luxury Hotels', items: [] },
-                'hotel-mid': { label: '🏡 Mid-Range & Budget Hotels', items: [] }
+                'hotel-mid': { label: '🏡 Mid-Range & Budget Hotels', items: [] },
+                'daytrip': { label: '🇩🇰 Solvang Day Trip', items: [] }
             };
 
             locations.forEach((loc, i) => {
@@ -1171,29 +1184,27 @@
         }
 
         // ——— Filters ———
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const filter = btn.dataset.filter;
-
-                markers.forEach(m => {
-                    if (filter === 'all' || m._locData.type === filter) {
-                        m.addTo(map);
-                    } else {
-                        map.removeLayer(m);
-                    }
-                });
-
-                buildSidebar(filter);
-
-                // Fit bounds to visible markers
-                const visible = markers.filter(m => map.hasLayer(m));
-                if (visible.length > 0) {
-                    const group = L.featureGroup(visible);
-                    map.fitBounds(group.getBounds().pad(0.15), { duration: 0.6 });
+        function applyFilter(filter) {
+            markers.forEach(m => {
+                if (filter === 'all' || m._locData.type === filter) {
+                    m.addTo(map);
+                } else {
+                    map.removeLayer(m);
                 }
             });
+
+            buildSidebar(filter);
+
+            // Fit bounds to visible markers
+            const visible = markers.filter(m => map.hasLayer(m));
+            if (visible.length > 0) {
+                const group = L.featureGroup(visible);
+                map.fitBounds(group.getBounds().pad(0.15), { duration: 0.6 });
+            }
+        }
+
+        document.getElementById('filterSelect').addEventListener('change', (e) => {
+            applyFilter(e.target.value);
         });
 
         // Setup Itinerary Hover Events
@@ -1273,8 +1284,7 @@
                         map.fitBounds(L.featureGroup(visible).getBounds().pad(0.15), { duration: 0.6 });
                     }
                 } else {
-                    const activeFilterBtn = document.querySelector('.filter-btn.active');
-                    if (activeFilterBtn) activeFilterBtn.click();
+                    applyFilter(document.getElementById('filterSelect').value);
                 }
             });
         });
